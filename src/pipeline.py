@@ -12,7 +12,7 @@ import torch
 if packaging.version.parse(torch.__version__) >= packaging.version.parse('1.12.0'):
     torch.backends.cuda.matmul.allow_tf32 = True
 
-INF_STEP= 10
+INF_STEP= 9
 def load_pipeline() -> StableDiffusionXLPipeline:
     pipeline = StableDiffusionXLPipeline.from_pretrained(
         "./models/newdream-sdxl-21/",
