@@ -12,7 +12,7 @@ import torch
 if packaging.version.parse(torch.__version__) >= packaging.version.parse('1.12.0'):
     torch.backends.cuda.matmul.allow_tf32 = True
 
-INF_STEP= 18
+INF_STEP= 10
 def load_pipeline() -> StableDiffusionXLPipeline:
     pipeline = StableDiffusionXLPipeline.from_pretrained(
         "./models/newdream-sdxl-21/",
@@ -24,32 +24,28 @@ def load_pipeline() -> StableDiffusionXLPipeline:
     config = CompilationConfig.Default()
 
     try:
+        import xformers
+        config.enable_xformers = True
+    except ImportError:
+        print('xformers not installed, skip')
+    try:
         import triton
         config.enable_triton = True
     except ImportError:
         print('Triton not installed, skip')
 
-    config.enable_cuda_graph = True
-    
+     
     
     pipeline  = compile(pipeline, config)
     
-    kwarg_inputs = dict(
-        prompt=
-        '(masterpiece:1,2), best quality, masterpiece, best detailed face, a beautiful girl',
-        height=512,
-        width=512,
-        num_inference_steps=INF_STEP,
-        num_images_per_prompt=1,
-    )
-
     for _ in range(3):
-        output_image = pipeline(**kwarg_inputs).images[0]
-    pipeline(prompt="")
+        pipeline(prompt="")
+    
     return pipeline
 
 def infer(request: TextToImageRequest, pipeline: StableDiffusionXLPipeline) -> Image:
     generator = Generator(pipeline.device).manual_seed(request.seed) if request.seed else None
+
     return pipeline(
         prompt=request.prompt,
         negative_prompt=request.negative_prompt,

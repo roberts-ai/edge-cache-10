@@ -7,7 +7,10 @@ name = "edge-maxxing-4090-newdream"
 description = "An edge-maxxing model submission for the 4090 newdream contest"
 requires-python = ">=3.10,<3.11"
 version = "1.0.0"
-dependencies = [
+dependencies = [ 
+    "xformers==0.0.25.post1",
+    "triton==2.2.0",
+    "torchvision==0.17.2",
     "diffusers==0.30.2",
     "transformers==4.41.2",
     "accelerate==0.31.0",
